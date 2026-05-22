@@ -3,18 +3,23 @@
 import { useEffect } from "react";
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
-import { PRIMARY_NAV, SECONDARY_NAV } from "@/lib/data/nav";
+import { PRIMARY_NAV } from "@/lib/data/nav";
 import { Brand } from "./Brand";
 import { Icon } from "@/components/ui/Icon";
+import { useAuth } from "@/lib/auth";
 import { SITE } from "@/lib/site";
 
 export function MobileNav({
   open,
   onClose,
+  onSignOut,
 }: {
   open: boolean;
   onClose: () => void;
+  onSignOut: () => void;
 }) {
+  const { user } = useAuth();
+
   useEffect(() => {
     if (!open) return;
     const previous = document.body.style.overflow;
@@ -57,6 +62,20 @@ export function MobileNav({
               </button>
             </div>
 
+            {user && (
+              <div className="border-b border-emerald-900/10 bg-emerald-700/5 px-6 py-4 text-sm">
+                <p className="text-[10px] uppercase tracking-[0.22em] text-emerald-700">
+                  Signed in
+                </p>
+                <div className="mt-1 flex items-center gap-2 font-display text-base text-ink-900">
+                  <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-emerald-700 text-[10px] text-cream">
+                    {user.username.slice(0, 1).toUpperCase()}
+                  </span>
+                  {user.username}
+                </div>
+              </div>
+            )}
+
             <nav className="flex-1 overflow-y-auto px-6 py-8">
               <ul className="flex flex-col gap-1">
                 {PRIMARY_NAV.map((link) => (
@@ -75,22 +94,41 @@ export function MobileNav({
               <div className="my-8 h-px bg-emerald-900/10" />
 
               <ul className="flex flex-col gap-2">
-                {SECONDARY_NAV.map((link) => (
-                  <li key={link.href}>
-                    <Link
-                      href={link.href}
-                      onClick={onClose}
-                      className={
-                        link.cta
-                          ? "flex items-center justify-between rounded-pill bg-emerald-700 px-5 py-3 text-sm font-medium text-cream"
-                          : "block rounded-pill border border-emerald-900/15 px-5 py-3 text-sm font-medium text-ink-900"
-                      }
+                <li>
+                  <Link
+                    href={user ? "/upload" : "/login?next=/upload"}
+                    onClick={onClose}
+                    className="flex items-center justify-between rounded-pill bg-emerald-700 px-5 py-3 text-sm font-medium text-cream"
+                  >
+                    Upload Property
+                    <Icon name="arrow-right" size={16} />
+                  </Link>
+                </li>
+                {user ? (
+                  <li>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        onClose();
+                        onSignOut();
+                      }}
+                      className="flex w-full items-center justify-between rounded-pill border border-emerald-900/15 px-5 py-3 text-left text-sm font-medium text-ink-900"
                     >
-                      {link.label}
-                      {link.cta && <Icon name="arrow-right" size={16} />}
+                      Sign out
+                      <Icon name="arrow-up-right" size={16} />
+                    </button>
+                  </li>
+                ) : (
+                  <li>
+                    <Link
+                      href="/login"
+                      onClick={onClose}
+                      className="block rounded-pill border border-emerald-900/15 px-5 py-3 text-sm font-medium text-ink-900"
+                    >
+                      Login
                     </Link>
                   </li>
-                ))}
+                )}
               </ul>
             </nav>
 

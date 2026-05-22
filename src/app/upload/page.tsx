@@ -4,7 +4,7 @@ import { PageHeader } from "@/components/ui/PageHeader";
 import { Icon } from "@/components/ui/Icon";
 import { IconTile } from "@/components/ui/IconTile";
 import type { IconName } from "@/components/ui/Icon";
-import { UploadForm } from "@/components/forms/UploadForm";
+import { UploadGate } from "@/components/auth/UploadGate";
 
 export const metadata: Metadata = {
   title: "Upload Property",
@@ -68,11 +68,11 @@ export default function UploadPage() {
               Tell us about your property
             </h2>
             <p className="mt-2 max-w-xl text-sm text-ink-500">
-              Demo form — submissions are simulated. Real backend coming with
-              the full MVP launch.
+              Uploading is restricted to verified RAPIC landlord partners.
+              Sign in with your landlord credentials to continue.
             </p>
             <div className="mt-10">
-              <UploadForm />
+              <UploadGate />
             </div>
           </div>
         </Container>

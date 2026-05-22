@@ -2,17 +2,20 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { PRIMARY_NAV, SECONDARY_NAV } from "@/lib/data/nav";
+import { usePathname, useRouter } from "next/navigation";
+import { PRIMARY_NAV } from "@/lib/data/nav";
 import { Brand } from "./Brand";
 import { MobileNav } from "./MobileNav";
 import { Icon } from "@/components/ui/Icon";
+import { useAuth } from "@/lib/auth";
 import { cn } from "@/lib/utils";
 
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const pathname = usePathname();
+  const router = useRouter();
+  const { user, logout } = useAuth();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
@@ -20,6 +23,12 @@ export function Navbar() {
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  const handleSignOut = () => {
+    logout();
+    router.push("/");
+    router.refresh();
+  };
 
   return (
     <>
@@ -61,20 +70,48 @@ export function Navbar() {
           </nav>
 
           <div className="hidden lg:flex items-center gap-3">
-            {SECONDARY_NAV.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={
-                  link.cta
-                    ? "inline-flex h-10 items-center gap-2 rounded-pill bg-emerald-700 px-5 text-sm font-medium text-cream transition-all duration-300 hover:bg-emerald-800 hover:-translate-y-0.5"
-                    : "inline-flex h-10 items-center rounded-pill border border-emerald-900/15 px-5 text-sm font-medium text-ink-900 transition-colors hover:border-emerald-700/40"
-                }
-              >
-                {link.cta && <Icon name="upload" size={14} />}
-                {link.label}
-              </Link>
-            ))}
+            {user ? (
+              <>
+                <Link
+                  href="/upload"
+                  className="inline-flex h-10 items-center gap-2 rounded-pill bg-emerald-700 px-5 text-sm font-medium text-cream transition-all duration-300 hover:bg-emerald-800 hover:-translate-y-0.5"
+                >
+                  <Icon name="upload" size={14} />
+                  Upload Property
+                </Link>
+                <span className="inline-flex h-10 items-center gap-2 rounded-pill border border-emerald-900/15 bg-cream/80 px-4 text-xs uppercase tracking-[0.16em] text-ink-700 backdrop-blur">
+                  <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-emerald-700 text-[10px] font-medium text-cream">
+                    {user.username.slice(0, 1).toUpperCase()}
+                  </span>
+                  {user.username}
+                </span>
+                <button
+                  type="button"
+                  onClick={handleSignOut}
+                  className="inline-flex h-10 items-center gap-1.5 rounded-pill border border-emerald-900/15 px-4 text-sm font-medium text-ink-900 transition-colors hover:border-emerald-700/40"
+                  aria-label="Sign out"
+                >
+                  <Icon name="arrow-up-right" size={14} />
+                  Sign out
+                </button>
+              </>
+            ) : (
+              <>
+                <Link
+                  href="/login?next=/upload"
+                  className="inline-flex h-10 items-center gap-2 rounded-pill bg-emerald-700 px-5 text-sm font-medium text-cream transition-all duration-300 hover:bg-emerald-800 hover:-translate-y-0.5"
+                >
+                  <Icon name="upload" size={14} />
+                  Upload Property
+                </Link>
+                <Link
+                  href="/login"
+                  className="inline-flex h-10 items-center rounded-pill border border-emerald-900/15 px-5 text-sm font-medium text-ink-900 transition-colors hover:border-emerald-700/40"
+                >
+                  Login
+                </Link>
+              </>
+            )}
           </div>
 
           <button
@@ -90,7 +127,11 @@ export function Navbar() {
 
       <div aria-hidden className="h-[72px]" />
 
-      <MobileNav open={mobileOpen} onClose={() => setMobileOpen(false)} />
+      <MobileNav
+        open={mobileOpen}
+        onClose={() => setMobileOpen(false)}
+        onSignOut={handleSignOut}
+      />
     </>
   );
 }

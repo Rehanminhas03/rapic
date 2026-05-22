@@ -4,6 +4,7 @@ import { Container } from "@/components/ui/Container";
 import { Icon } from "@/components/ui/Icon";
 import { Brand } from "@/components/layout/Brand";
 import { LoginForm } from "@/components/forms/LoginForm";
+import { RequestAccessPanel } from "@/components/auth/RequestAccessPanel";
 import { BLUR_EMERALD } from "@/lib/utils";
 
 export const metadata: Metadata = {
@@ -19,20 +20,20 @@ export default function LoginPage() {
           <div className="bg-cream p-8 sm:p-12 lg:p-16">
             <Brand />
             <h1 className="mt-12 font-display text-3xl leading-tight text-ink-900 sm:text-4xl text-balance">
-              Welcome back.
+              Landlord sign-in.
             </h1>
             <p className="mt-3 max-w-sm text-sm text-ink-500">
-              Sign in to manage your listings, saved searches, and direct
-              tenant enquiries.
+              Sign in with your landlord credentials to upload and manage
+              listings on RAPIC.
             </p>
 
             <div className="mt-10 max-w-md">
               <LoginForm />
             </div>
 
-            <p className="mt-12 text-xs text-ink-500">
-              Demo only · no real authentication is performed.
-            </p>
+            <div className="mt-10 max-w-md">
+              <RequestAccessPanel />
+            </div>
           </div>
 
           <div className="relative hidden min-h-[640px] lg:block">
